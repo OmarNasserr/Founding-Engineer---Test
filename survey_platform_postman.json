@@ -53,6 +53,9 @@
   "item": [
     {
       "name": "Authentication",
+      "auth": {
+        "type": "noauth"
+      },
       "item": [
         {
           "name": "Register New User",
