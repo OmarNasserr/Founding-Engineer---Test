@@ -22,6 +22,7 @@ A production-ready dynamic survey platform built with Django REST Framework. Adm
 
 ```bash
 git clone https://github.com/OmarNasserr/Founding-Engineer---Test.git
+cd Founding-Engineer---Test
 ```
 
 A `.env` file is included in the repo with working values for local development. No changes needed to get started.
