@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Survey Platform API",
-    "description": "Complete API collection for the Survey Platform.\n\n**Setup:**\n1. Import this collection\n2. Run **Login as Admin** first — the `access_token` is automatically saved via the Tests script\n3. All authenticated requests use `{{access_token}}` automatically via the collection-level Bearer auth\n\n**Seeded users:** admin@survey.com / analyst@survey.com / viewer@survey.com — all password: `Admin1234!`\n\n**Seeded survey ID:** `019e35eb-48c8-73cc-85a9-4617220b0db4`\n\n**Note on trailing slashes:** A collection-level pre-request script automatically appends a trailing slash to every request URL. Django raises a 500 on PATCH / POST / PUT requests to slash-less URLs (it cannot safely redirect requests that carry a body).",
+    "description": "Complete API collection for the Survey Platform.\n\n**Setup:**\n1. Import this collection\n2. Run **Login as Admin** first — the `access_token` is automatically saved via the Tests script\n3. All authenticated requests use `{{access_token}}` automatically via the collection-level Bearer auth\n\n**Seeded users:** admin@survey.com / analyst@survey.com / viewer@survey.com — all password: `Admin1234!`\n\n**Seeded survey ID:** `10000000-0000-0000-0000-000000000001`\n\n**Note on trailing slashes:** A collection-level pre-request script automatically appends a trailing slash to every request URL. Django raises a 500 on PATCH / POST / PUT requests to slash-less URLs (it cannot safely redirect requests that carry a body).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -245,7 +245,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID returned by the POST"
                 }
               ]
@@ -269,7 +269,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 }
               ]
@@ -289,7 +289,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 }
               ]
@@ -309,7 +309,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 }
               ]
@@ -329,7 +329,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 }
               ]
@@ -355,7 +355,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID — must be published"
                 }
               ]
@@ -393,14 +393,14 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID — must be published"
                 }
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"019e35eb-48d3-7f27-9ded-27ee83aee00d\",\n      \"value\": \"Yes\"\n    }\n  ]\n}"
+              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000003\",\n      \"value\": \"Yes\"\n    }\n  ]\n}"
             },
             "description": "Creates a Respondent + SurveyResponse and returns a JWT `session_token`. Optionally saves first answers.\n\nThe `session_token` is **automatically saved** to the `session_token` collection variable by the Tests script — the Resume, Autosave, and Submit requests use it automatically.\n\nSend `{}` or `{\"answers\": []}` to start with no initial answers."
           }
@@ -418,7 +418,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 },
                 {
@@ -446,7 +446,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 },
                 {
@@ -458,9 +458,9 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"019e35eb-48d0-7615-b083-51d2bc687df0\",\n      \"value\": \"Alice Smith\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d2-7fe6-8858-d2d160757d24\",\n      \"value\": \"alice@example.com\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d3-7f27-9ded-27ee83aee00d\",\n      \"value\": \"Yes\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d5-7c30-9a40-682fde1768cc\",\n      \"value\": \"Toyota\"\n    }\n  ]\n}"
+              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000001\",\n      \"value\": \"Alice Smith\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000002\",\n      \"value\": \"alice@example.com\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000003\",\n      \"value\": \"Yes\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000004\",\n      \"value\": \"Toyota\"\n    }\n  ]\n}"
             },
-            "description": "Upserts answers — sending the same `field_id` again updates the existing value rather than creating a duplicate. Updates `last_saved_at`.\n\nSeeded survey field IDs:\n- Full Name: `019e35eb-48d0-7615-b083-51d2bc687df0`\n- Email Address: `019e35eb-48d2-7fe6-8858-d2d160757d24`\n- Do you own a car?: `019e35eb-48d3-7f27-9ded-27ee83aee00d`\n- Car Brand: `019e35eb-48d5-7c30-9a40-682fde1768cc`\n- Year of Manufacture: `019e35eb-48d6-7ad6-a1dd-dacddeda644c`\n- Additional Comments: `019e35eb-48d8-7d65-aad7-4fb5d63a78fc`\n- Overall Satisfaction: `019e35eb-48d9-7722-889f-07848f3aa4ef`"
+            "description": "Upserts answers — sending the same `field_id` again updates the existing value rather than creating a duplicate. Updates `last_saved_at`.\n\nSeeded survey field IDs:\n- Full Name: `30000000-0000-0000-0000-000000000001`\n- Email Address: `30000000-0000-0000-0000-000000000002`\n- Do you own a car?: `30000000-0000-0000-0000-000000000003`\n- Car Brand: `30000000-0000-0000-0000-000000000004`\n- Year of Manufacture: `30000000-0000-0000-0000-000000000005`\n- Additional Comments: `30000000-0000-0000-0000-000000000006`\n- Overall Satisfaction: `30000000-0000-0000-0000-000000000007`"
           }
         },
         {
@@ -485,7 +485,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"019e35eb-48d0-7615-b083-51d2bc687df0\",\n      \"value\": \"Alice Smith\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d2-7fe6-8858-d2d160757d24\",\n      \"value\": \"alice@example.com\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d3-7f27-9ded-27ee83aee00d\",\n      \"value\": \"Yes\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d5-7c30-9a40-682fde1768cc\",\n      \"value\": \"Toyota\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d6-7ad6-a1dd-dacddeda644c\",\n      \"value\": \"2021\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d8-7d65-aad7-4fb5d63a78fc\",\n      \"value\": \"Great experience overall!\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d9-7722-889f-07848f3aa4ef\",\n      \"value\": \"5\"\n    }\n  ]\n}"
+              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000001\",\n      \"value\": \"Alice Smith\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000002\",\n      \"value\": \"alice@example.com\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000003\",\n      \"value\": \"Yes\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000004\",\n      \"value\": \"Toyota\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000005\",\n      \"value\": \"2021\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000006\",\n      \"value\": \"Great experience overall!\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000007\",\n      \"value\": \"5\"\n    }\n  ]\n}"
             },
             "description": "`car=Yes` activates the Vehicle Details section — Car Brand and Year of Manufacture are required and must be answered. Respondent profile is auto-populated from `maps_to` fields (Full Name → `respondent.full_name`, Email → `respondent.email`).\n\nMerges answers from this payload with any previously autosaved answers."
           }
@@ -512,7 +512,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"019e35eb-48d0-7615-b083-51d2bc687df0\",\n      \"value\": \"Bob Jones\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d2-7fe6-8858-d2d160757d24\",\n      \"value\": \"bob@example.com\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d3-7f27-9ded-27ee83aee00d\",\n      \"value\": \"No\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d9-7722-889f-07848f3aa4ef\",\n      \"value\": \"4\"\n    }\n  ]\n}"
+              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000001\",\n      \"value\": \"Bob Jones\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000002\",\n      \"value\": \"bob@example.com\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000003\",\n      \"value\": \"No\"\n    },\n    {\n      \"field_id\": \"30000000-0000-0000-0000-000000000007\",\n      \"value\": \"4\"\n    }\n  ]\n}"
             },
             "description": "`car=No` means the Vehicle Details section condition fails — Car Brand and Year of Manufacture are NOT enforced even though they are marked required. Submit succeeds without them, demonstrating conditional logic enforcement."
           }
@@ -534,7 +534,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 }
               ]
@@ -569,7 +569,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 }
               ]
@@ -593,7 +593,7 @@
               "variable": [
                 {
                   "key": "survey_id",
-                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "value": "10000000-0000-0000-0000-000000000001",
                   "description": "Survey UUID"
                 }
               ]
