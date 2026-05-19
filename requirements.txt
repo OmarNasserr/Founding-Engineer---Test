@@ -1,0 +1,36 @@
+# Core
+Django==5.1
+djangorestframework==3.15.2
+psycopg2-binary==2.9.9
+python-decouple==3.8
+
+# Auth
+djangorestframework-simplejwt==5.3.1
+
+# Async
+celery==5.4.0
+redis==5.0.8
+
+# API Docs
+drf-spectacular==0.27.2
+
+# Filtering
+django-filter==24.3
+
+# Encryption
+cryptography==43.0.1
+
+# UUID7
+uuid6==2024.1.12
+
+# CORS
+django-cors-headers==4.4.0
+
+# Testing
+pytest==8.3.3
+pytest-django==4.9.0
+pytest-cov==5.0.0
+factory-boy==3.3.1
+
+# Linting
+ruff==0.6.9

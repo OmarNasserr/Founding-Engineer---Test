@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    container_name: survey-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    container_name: survey-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    image: survey_backend:latest
+    container_name: survey-backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py seed &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery:
+    build: .
+    image: survey_backend:latest
+    container_name: survey-worker
+    command: celery -A survey_platform worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
