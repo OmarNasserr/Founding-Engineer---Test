@@ -47,7 +47,6 @@ services:
     restart: unless-stopped
 
   celery:
-    build: .
     image: survey_backend:latest
     container_name: survey-worker
     command: celery -A survey_platform worker --loglevel=info
