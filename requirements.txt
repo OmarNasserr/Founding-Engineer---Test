@@ -30,7 +30,4 @@ django-cors-headers==4.4.0
 pytest==8.3.3
 pytest-django==4.9.0
 pytest-cov==5.0.0
-factory-boy==3.3.1
 
-# Linting
-ruff==0.6.9
