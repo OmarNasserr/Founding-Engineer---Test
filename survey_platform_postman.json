@@ -1,0 +1,604 @@
+{
+  "info": {
+    "name": "Survey Platform API",
+    "description": "Complete API collection for the Survey Platform.\n\n**Setup:**\n1. Import this collection\n2. Run **Login as Admin** first — the `access_token` is automatically saved via the Tests script\n3. All authenticated requests use `{{access_token}}` automatically via the collection-level Bearer auth\n\n**Seeded users:** admin@survey.com / analyst@survey.com / viewer@survey.com — all password: `Admin1234!`\n\n**Seeded survey ID:** `019e35eb-48c8-73cc-85a9-4617220b0db4`\n\n**Note on trailing slashes:** A collection-level pre-request script automatically appends a trailing slash to every request URL. Django raises a 500 on PATCH / POST / PUT requests to slash-less URLs (it cannot safely redirect requests that carry a body).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Django raises a 500 (RuntimeError) when PATCH / POST / PUT requests are sent",
+          "// to a URL without a trailing slash — it cannot safely redirect a request that",
+          "// carries a body. This script ensures every request ends with '/' regardless of",
+          "// how the URL was typed, so the collection works out of the box.",
+          "const rawUrl = pm.request.url.toString();",
+          "const [pathPart, queryPart] = rawUrl.split('?');",
+          "if (!pathPart.endsWith('/')) {",
+          "    pm.request.url = queryPart ? `${pathPart}/?${queryPart}` : `${pathPart}/`;",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register New User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/auth/register/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"username\": \"newuser\",\n  \"password\": \"SecurePass1!\",\n  \"role\": \"analyst\"\n}"
+            },
+            "description": "Register a new staff user. `role` options: `admin`, `analyst`, `data_viewer` (default if omitted)."
+          }
+        },
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.access) {",
+                  "    pm.collectionVariables.set('access_token', res.access);",
+                  "    pm.collectionVariables.set('refresh_token', res.refresh);",
+                  "    console.log('Admin token saved');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/auth/login/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@survey.com\",\n  \"password\": \"Admin1234!\"\n}"
+            },
+            "description": "Logs in as admin. `access_token` and `refresh_token` are saved automatically to collection variables and used by all subsequent requests."
+          }
+        },
+        {
+          "name": "Login as Analyst",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.access) {",
+                  "    pm.collectionVariables.set('access_token', res.access);",
+                  "    pm.collectionVariables.set('refresh_token', res.refresh);",
+                  "    console.log('Analyst token saved');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/auth/login/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"analyst@survey.com\",\n  \"password\": \"Admin1234!\"\n}"
+            },
+            "description": "Logs in as analyst. Can access analytics and trigger exports but cannot create or edit surveys."
+          }
+        },
+        {
+          "name": "Login as Data Viewer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.access) {",
+                  "    pm.collectionVariables.set('access_token', res.access);",
+                  "    pm.collectionVariables.set('refresh_token', res.refresh);",
+                  "    console.log('Viewer token saved');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/auth/login/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"viewer@survey.com\",\n  \"password\": \"Admin1234!\"\n}"
+            },
+            "description": "Logs in as data_viewer. Can read analytics and export reports but cannot trigger exports or access the survey builder."
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.access) {",
+                  "    pm.collectionVariables.set('access_token', res.access);",
+                  "    console.log('Token refreshed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/auth/token/refresh/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "description": "Exchange a refresh token for a new access token. The new access token is saved automatically."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Survey Builder",
+      "item": [
+        {
+          "name": "List Surveys",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ""],
+              "query": [
+                { "key": "search",            "value": "Customer",          "description": "Search across title and description (case-insensitive)", "disabled": true },
+                { "key": "status",            "value": "published",         "description": "draft | published | archived", "disabled": true },
+                { "key": "created_by__email", "value": "admin@survey.com",  "description": "Filter by creator email", "disabled": true },
+                { "key": "page_number",       "value": "1",                 "disabled": true },
+                { "key": "page_size",         "value": "10",                "disabled": true }
+              ]
+            },
+            "description": "Returns a paginated list of all surveys. Toggle the query params to filter by status, creator, or search by title/description. Admin only."
+          }
+        },
+        {
+          "name": "Create Survey (step 1 of 2)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/dashboard/surveys/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Customer Satisfaction Survey\",\n  \"description\": \"Annual feedback survey.\",\n  \"sections\": [\n    {\n      \"title\": \"Personal Info\",\n      \"order\": 1,\n      \"conditions\": null,\n      \"fields\": [\n        {\n          \"label\": \"Full Name\",\n          \"field_type\": \"text\",\n          \"order\": 1,\n          \"is_required\": true,\n          \"maps_to\": \"respondent_full_name\",\n          \"validation_rules\": {\"min_length\": 2, \"max_length\": 100},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Email Address\",\n          \"field_type\": \"email\",\n          \"order\": 2,\n          \"is_required\": true,\n          \"maps_to\": \"respondent_email\",\n          \"validation_rules\": {\"max_length\": 254},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Phone Number\",\n          \"field_type\": \"text\",\n          \"order\": 3,\n          \"is_required\": false,\n          \"maps_to\": \"respondent_phone\",\n          \"validation_rules\": {\"regex\": \"^\\\\+?[0-9\\\\s\\\\-]{7,15}$\"},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Do you own a car?\",\n          \"field_type\": \"radio\",\n          \"order\": 4,\n          \"is_required\": true,\n          \"options\": [\"Yes\", \"No\"],\n          \"conditions\": null\n        }\n      ]\n    },\n    {\n      \"title\": \"Vehicle Details\",\n      \"order\": 2,\n      \"conditions\": null,\n      \"fields\": [\n        {\n          \"label\": \"Car Brand\",\n          \"field_type\": \"dropdown\",\n          \"order\": 1,\n          \"is_required\": true,\n          \"options\": [\"Toyota\", \"Honda\", \"Ford\", \"BMW\", \"Tesla\", \"Other\"],\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Favourite Features\",\n          \"field_type\": \"checkbox\",\n          \"order\": 2,\n          \"is_required\": false,\n          \"options\": [\"Safety\", \"Fuel Economy\", \"Performance\", \"Design\", \"Tech\"],\n          \"validation_rules\": {\"min_selections\": 1, \"max_selections\": 3},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Year of Manufacture\",\n          \"field_type\": \"number\",\n          \"order\": 3,\n          \"is_required\": true,\n          \"validation_rules\": {\"min\": 1990, \"max\": 2025},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Purchase Date\",\n          \"field_type\": \"date\",\n          \"order\": 4,\n          \"is_required\": false,\n          \"validation_rules\": {\"min_date\": \"1990-01-01\", \"max_date\": \"2025-12-31\"},\n          \"conditions\": null\n        }\n      ]\n    },\n    {\n      \"title\": \"General Feedback\",\n      \"order\": 3,\n      \"conditions\": null,\n      \"fields\": [\n        {\n          \"label\": \"Additional Comments\",\n          \"field_type\": \"textarea\",\n          \"order\": 1,\n          \"is_required\": false,\n          \"validation_rules\": {\"max_length\": 1000},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Overall Satisfaction\",\n          \"field_type\": \"rating\",\n          \"order\": 2,\n          \"is_required\": true,\n          \"validation_rules\": {\"min\": 1, \"max\": 5},\n          \"conditions\": null\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "description": "Creates a survey with nested sections and fields in one atomic request. Survey starts as `draft`.\n\n⚠️ **All `conditions` must be `null` on create** — field UUIDs are generated server-side and are not known yet.\n\n**Step 2:** copy the field UUIDs from the response, then call `PUT` to add conditional logic."
+          }
+        },
+        {
+          "name": "Update Survey — add conditions (step 2 of 2)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/:survey_id/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ":survey_id", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID returned by the POST"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Customer Satisfaction Survey\",\n  \"description\": \"Annual feedback survey.\",\n  \"sections\": [\n    {\n      \"title\": \"Personal Info\",\n      \"order\": 1,\n      \"conditions\": null,\n      \"fields\": [\n        {\n          \"label\": \"Full Name\",\n          \"field_type\": \"text\",\n          \"order\": 1,\n          \"is_required\": true,\n          \"maps_to\": \"respondent_full_name\",\n          \"validation_rules\": {\"min_length\": 2, \"max_length\": 100},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Email Address\",\n          \"field_type\": \"email\",\n          \"order\": 2,\n          \"is_required\": true,\n          \"maps_to\": \"respondent_email\",\n          \"validation_rules\": {\"max_length\": 254},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Phone Number\",\n          \"field_type\": \"text\",\n          \"order\": 3,\n          \"is_required\": false,\n          \"maps_to\": \"respondent_phone\",\n          \"validation_rules\": {\"regex\": \"^\\\\+?[0-9\\\\s\\\\-]{7,15}$\"},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Do you own a car?\",\n          \"field_type\": \"radio\",\n          \"order\": 4,\n          \"is_required\": true,\n          \"options\": [\"Yes\", \"No\"],\n          \"conditions\": null\n        }\n      ]\n    },\n    {\n      \"title\": \"Vehicle Details\",\n      \"order\": 2,\n      \"conditions\": {\n        \"conditions\": [\n          {\n            \"field_id\": \"<uuid-of-do-you-own-a-car-field>\",\n            \"operator\": \"eq\",\n            \"value\": \"Yes\"\n          }\n        ]\n      },\n      \"fields\": [\n        {\n          \"label\": \"Car Brand\",\n          \"field_type\": \"dropdown\",\n          \"order\": 1,\n          \"is_required\": true,\n          \"options\": [\"Toyota\", \"Honda\", \"Ford\", \"BMW\", \"Tesla\", \"Other\"],\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Favourite Features\",\n          \"field_type\": \"checkbox\",\n          \"order\": 2,\n          \"is_required\": false,\n          \"options\": [\"Safety\", \"Fuel Economy\", \"Performance\", \"Design\", \"Tech\"],\n          \"validation_rules\": {\"min_selections\": 1, \"max_selections\": 3},\n          \"conditions\": {\n            \"conditions\": [\n              {\n                \"field_id\": \"<uuid-of-car-brand-field>\",\n                \"operator\": \"neq\",\n                \"value\": \"Other\"\n              }\n            ]\n          }\n        },\n        {\n          \"label\": \"Year of Manufacture\",\n          \"field_type\": \"number\",\n          \"order\": 3,\n          \"is_required\": true,\n          \"validation_rules\": {\"min\": 1990, \"max\": 2025},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Purchase Date\",\n          \"field_type\": \"date\",\n          \"order\": 4,\n          \"is_required\": false,\n          \"validation_rules\": {\"min_date\": \"1990-01-01\", \"max_date\": \"2025-12-31\"},\n          \"conditions\": {\n            \"conditions\": [\n              {\n                \"field_id\": \"<uuid-of-year-of-manufacture-field>\",\n                \"operator\": \"gte\",\n                \"value\": \"2000\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    {\n      \"title\": \"General Feedback\",\n      \"order\": 3,\n      \"conditions\": null,\n      \"fields\": [\n        {\n          \"label\": \"Additional Comments\",\n          \"field_type\": \"textarea\",\n          \"order\": 1,\n          \"is_required\": false,\n          \"validation_rules\": {\"max_length\": 1000},\n          \"conditions\": null\n        },\n        {\n          \"label\": \"Overall Satisfaction\",\n          \"field_type\": \"rating\",\n          \"order\": 2,\n          \"is_required\": true,\n          \"validation_rules\": {\"min\": 1, \"max\": 5},\n          \"conditions\": null\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "description": "Full replace — **all sections and fields not included in this payload are permanently deleted.**\n\nThis is step 2: replace the `<uuid-of-*>` placeholders with real field UUIDs from the `POST` response. Use `GET .../fields/` to retrieve the flat list of UUIDs without having to parse the full nested structure.\n\n**Available operators:** `eq` `neq` `gt` `lt` `gte` `lte` `contains` `in`"
+          }
+        },
+        {
+          "name": "Get Survey Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/:survey_id/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ":survey_id", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                }
+              ]
+            },
+            "description": "Returns the full survey structure with all sections and fields including conditions, validation rules, and options. Works for any status (draft / published / archived)."
+          }
+        },
+        {
+          "name": "Get Survey Fields (flat list for conditions builder)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/:survey_id/fields/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ":survey_id", "fields", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                }
+              ]
+            },
+            "description": "Returns every field in the survey as a **flat, ordered list** (by section order then field order). Intended for the conditions builder UI — gives you `id`, `label`, `field_type`, and `options` without having to parse the full nested survey structure.\n\nUse the returned `id` values as `field_id` when building conditions in the `PUT` payload."
+          }
+        },
+        {
+          "name": "Publish Survey",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/:survey_id/publish/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ":survey_id", "publish", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                }
+              ]
+            },
+            "description": "Changes the survey status to `published`, making it accessible to respondents.\n\n**Requirements:** at least one section containing at least one field. Idempotent — publishing an already-published survey returns 200."
+          }
+        },
+        {
+          "name": "Delete Survey",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/:survey_id/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ":survey_id", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                }
+              ]
+            },
+            "description": "Permanently deletes the survey and all related data — sections, fields, responses, and export reports."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Respondent Flow",
+      "item": [
+        {
+          "name": "Get Published Survey (no auth)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{base_url}}/surveys/:survey_id/",
+              "host": ["{{base_url}}"],
+              "path": ["surveys", ":survey_id", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID — must be published"
+                }
+              ]
+            },
+            "description": "Returns the full survey structure for respondents. No auth required. Redis-cached for 1 hour. Draft and archived surveys return 404."
+          }
+        },
+        {
+          "name": "Start Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.session_token) {",
+                  "    pm.collectionVariables.set('session_token', res.session_token);",
+                  "    pm.collectionVariables.set('survey_response_id', res.survey_response_id);",
+                  "    console.log('Session token saved to collection variable: session_token');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{base_url}}/surveys/:survey_id/respond/",
+              "host": ["{{base_url}}"],
+              "path": ["surveys", ":survey_id", "respond", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID — must be published"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"019e35eb-48d3-7f27-9ded-27ee83aee00d\",\n      \"value\": \"Yes\"\n    }\n  ]\n}"
+            },
+            "description": "Creates a Respondent + SurveyResponse and returns a JWT `session_token`. Optionally saves first answers.\n\nThe `session_token` is **automatically saved** to the `session_token` collection variable by the Tests script — the Resume, Autosave, and Submit requests use it automatically.\n\nSend `{}` or `{\"answers\": []}` to start with no initial answers."
+          }
+        },
+        {
+          "name": "Resume Session",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{base_url}}/surveys/:survey_id/respond/:session_token/",
+              "host": ["{{base_url}}"],
+              "path": ["surveys", ":survey_id", "respond", ":session_token", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                },
+                {
+                  "key": "session_token",
+                  "value": "{{session_token}}",
+                  "description": "JWT token — auto-populated from Start Session"
+                }
+              ]
+            },
+            "description": "Returns all previously saved answers and the session status (`in_progress` or `completed`). Sensitive fields are decrypted transparently."
+          }
+        },
+        {
+          "name": "Autosave Partial Answers",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{base_url}}/surveys/:survey_id/respond/:session_token/",
+              "host": ["{{base_url}}"],
+              "path": ["surveys", ":survey_id", "respond", ":session_token", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                },
+                {
+                  "key": "session_token",
+                  "value": "{{session_token}}",
+                  "description": "JWT token — auto-populated from Start Session"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"019e35eb-48d0-7615-b083-51d2bc687df0\",\n      \"value\": \"Alice Smith\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d2-7fe6-8858-d2d160757d24\",\n      \"value\": \"alice@example.com\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d3-7f27-9ded-27ee83aee00d\",\n      \"value\": \"Yes\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d5-7c30-9a40-682fde1768cc\",\n      \"value\": \"Toyota\"\n    }\n  ]\n}"
+            },
+            "description": "Upserts answers — sending the same `field_id` again updates the existing value rather than creating a duplicate. Updates `last_saved_at`.\n\nSeeded survey field IDs:\n- Full Name: `019e35eb-48d0-7615-b083-51d2bc687df0`\n- Email Address: `019e35eb-48d2-7fe6-8858-d2d160757d24`\n- Do you own a car?: `019e35eb-48d3-7f27-9ded-27ee83aee00d`\n- Car Brand: `019e35eb-48d5-7c30-9a40-682fde1768cc`\n- Year of Manufacture: `019e35eb-48d6-7ad6-a1dd-dacddeda644c`\n- Additional Comments: `019e35eb-48d8-7d65-aad7-4fb5d63a78fc`\n- Overall Satisfaction: `019e35eb-48d9-7722-889f-07848f3aa4ef`"
+          }
+        },
+        {
+          "name": "Submit — car=Yes (conditional section active)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{base_url}}/surveys/submit/:session_token/",
+              "host": ["{{base_url}}"],
+              "path": ["surveys", "submit", ":session_token", ""],
+              "variable": [
+                {
+                  "key": "session_token",
+                  "value": "{{session_token}}",
+                  "description": "JWT token — auto-populated from Start Session"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"019e35eb-48d0-7615-b083-51d2bc687df0\",\n      \"value\": \"Alice Smith\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d2-7fe6-8858-d2d160757d24\",\n      \"value\": \"alice@example.com\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d3-7f27-9ded-27ee83aee00d\",\n      \"value\": \"Yes\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d5-7c30-9a40-682fde1768cc\",\n      \"value\": \"Toyota\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d6-7ad6-a1dd-dacddeda644c\",\n      \"value\": \"2021\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d8-7d65-aad7-4fb5d63a78fc\",\n      \"value\": \"Great experience overall!\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d9-7722-889f-07848f3aa4ef\",\n      \"value\": \"5\"\n    }\n  ]\n}"
+            },
+            "description": "`car=Yes` activates the Vehicle Details section — Car Brand and Year of Manufacture are required and must be answered. Respondent profile is auto-populated from `maps_to` fields (Full Name → `respondent.full_name`, Email → `respondent.email`).\n\nMerges answers from this payload with any previously autosaved answers."
+          }
+        },
+        {
+          "name": "Submit — car=No (conditional section skipped)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{base_url}}/surveys/submit/:session_token/",
+              "host": ["{{base_url}}"],
+              "path": ["surveys", "submit", ":session_token", ""],
+              "variable": [
+                {
+                  "key": "session_token",
+                  "value": "{{session_token}}",
+                  "description": "JWT token — auto-populated from Start Session"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\n    {\n      \"field_id\": \"019e35eb-48d0-7615-b083-51d2bc687df0\",\n      \"value\": \"Bob Jones\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d2-7fe6-8858-d2d160757d24\",\n      \"value\": \"bob@example.com\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d3-7f27-9ded-27ee83aee00d\",\n      \"value\": \"No\"\n    },\n    {\n      \"field_id\": \"019e35eb-48d9-7722-889f-07848f3aa4ef\",\n      \"value\": \"4\"\n    }\n  ]\n}"
+            },
+            "description": "`car=No` means the Vehicle Details section condition fails — Car Brand and Year of Manufacture are NOT enforced even though they are marked required. Submit succeeds without them, demonstrating conditional logic enforcement."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics & Exports",
+      "item": [
+        {
+          "name": "Get Survey Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/:survey_id/analytics/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ":survey_id", "analytics", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                }
+              ]
+            },
+            "description": "Returns total response count, completed count, completion rate (%), and per-field value distributions for choice fields (radio, dropdown, checkbox).\n\nRedis-cached for 5 minutes. Accessible to admin, analyst, and data_viewer."
+          }
+        },
+        {
+          "name": "Trigger CSV Export",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.export_report_id) {",
+                  "    pm.collectionVariables.set('export_report_id', res.export_report_id);",
+                  "    console.log('Export report ID saved:', res.export_report_id);",
+                  "    console.log('Poll List Export Reports until status = ready');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/:survey_id/analytics/export/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ":survey_id", "analytics", "export", ""],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                }
+              ]
+            },
+            "description": "Queues a Celery background task to export all completed survey responses to CSV. Returns immediately with an `export_report_id`.\n\nThe `export_report_id` is saved automatically to the collection variable. Poll **List Export Reports** until `status` changes from `pending` to `ready`, then use `file_url` to download the CSV.\n\nAdmin and analyst only."
+          }
+        },
+        {
+          "name": "List Export Reports",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/surveys/:survey_id/analytics/reports/",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "surveys", ":survey_id", "analytics", "reports", ""],
+              "query": [
+                { "key": "status",                "value": "ready",                "description": "pending | ready | failed", "disabled": true },
+                { "key": "requested_by__email",   "value": "analyst@survey.com",   "description": "Filter by requester email", "disabled": true }
+              ],
+              "variable": [
+                {
+                  "key": "survey_id",
+                  "value": "019e35eb-48c8-73cc-85a9-4617220b0db4",
+                  "description": "Survey UUID"
+                }
+              ]
+            },
+            "description": "Lists all export reports for this survey, ordered newest first. Toggle the query params to filter by status or requester.\n\nWhen `status=ready`, `file_url` contains the absolute URL to download the CSV. Accessible to admin, analyst, and data_viewer."
+          }
+        }
+      ]
+    }
+  ]
+}
