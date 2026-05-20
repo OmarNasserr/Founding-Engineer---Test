@@ -262,4 +262,4 @@ With coverage report:
 docker exec survey-backend pytest --cov=surveys_app --cov=accounts_app --cov=audit_app --cov=core --cov-report=term-missing
 ```
 
-**202 tests — 94% coverage**
+**207 tests — 94% coverage**
